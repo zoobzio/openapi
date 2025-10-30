@@ -1,5 +1,14 @@
 # OpenAPI
 
+[![CI Status](https://github.com/zoobzio/openapi/workflows/CI/badge.svg)](https://github.com/zoobzio/openapi/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/zoobzio/openapi/graph/badge.svg?branch=main)](https://codecov.io/gh/zoobzio/openapi)
+[![Go Report Card](https://goreportcard.com/badge/github.com/zoobzio/openapi)](https://goreportcard.com/report/github.com/zoobzio/openapi)
+[![CodeQL](https://github.com/zoobzio/openapi/workflows/CodeQL/badge.svg)](https://github.com/zoobzio/openapi/security/code-scanning)
+[![Go Reference](https://pkg.go.dev/badge/github.com/zoobzio/openapi.svg)](https://pkg.go.dev/github.com/zoobzio/openapi)
+[![License](https://img.shields.io/github/license/zoobzio/openapi)](LICENSE)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/zoobzio/openapi)](go.mod)
+[![Release](https://img.shields.io/github/v/release/zoobzio/openapi)](https://github.com/zoobzio/openapi/releases)
+
 A comprehensive Go implementation of the OpenAPI 3.0 specification.
 
 ## Features
