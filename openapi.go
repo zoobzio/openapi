@@ -1,8 +1,5 @@
 package openapi
 
-// OpenAPI 3.0 specification structs
-// Minimal implementation for generating API documentation from handlers
-
 // OpenAPI represents the root document object.
 type OpenAPI struct {
 	Paths        map[string]PathItem    `json:"paths" yaml:"paths"`
