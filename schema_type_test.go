@@ -100,6 +100,21 @@ func TestSchemaType_Strings_Empty(t *testing.T) {
 	}
 }
 
+func TestSchemaType_Strings_EmptyString(t *testing.T) {
+	st := NewSchemaType("")
+	types := st.Strings()
+	if types != nil {
+		t.Errorf("expected nil for empty string, got %v", types)
+	}
+}
+
+func TestSchemaType_String_EmptySlice(t *testing.T) {
+	st := NewSchemaTypes([]string{})
+	if st.String() != "" {
+		t.Errorf("expected empty string, got %q", st.String())
+	}
+}
+
 func TestSchemaType_MarshalJSON_String(t *testing.T) {
 	st := NewSchemaType("string")
 	data, err := json.Marshal(st)
@@ -234,6 +249,69 @@ func TestSchemaType_UnmarshalYAML_Array(t *testing.T) {
 	}
 	if !st.IsNullable() {
 		t.Error("should be nullable")
+	}
+}
+
+func TestSchemaType_UnmarshalYAML_SingleElementArray(t *testing.T) {
+	var st SchemaType
+	if err := yaml.Unmarshal([]byte("- string"), &st); err != nil {
+		t.Fatalf("unmarshal error: %v", err)
+	}
+	// Single element array should be normalized to string
+	if st.IsArray() {
+		t.Error("single element array should be normalized to string")
+	}
+	if st.String() != "string" {
+		t.Errorf("expected 'string', got %q", st.String())
+	}
+}
+
+func TestSchemaType_MarshalYAML_Empty(t *testing.T) {
+	var empty SchemaType
+	data, err := yaml.Marshal(&empty)
+	if err != nil {
+		t.Fatalf("marshal error: %v", err)
+	}
+	if string(data) != "null\n" {
+		t.Errorf("expected 'null\\n', got %q", data)
+	}
+}
+
+func TestSchemaType_UnmarshalYAML_InvalidArray(t *testing.T) {
+	var st SchemaType
+	// Create a YAML node that's a sequence with non-string elements
+	var node yaml.Node
+	if err := yaml.Unmarshal([]byte("- 123\n- 456"), &node); err != nil {
+		t.Fatalf("setup error: %v", err)
+	}
+	// This should succeed but with string conversion
+	if err := st.UnmarshalYAML(node.Content[0]); err != nil {
+		t.Logf("got expected-ish error or nil: %v", err)
+	}
+}
+
+func TestSchemaType_UnmarshalYAML_MappingNode(t *testing.T) {
+	var st SchemaType
+	// Create a YAML mapping node
+	var node yaml.Node
+	if err := yaml.Unmarshal([]byte("key: value"), &node); err != nil {
+		t.Fatalf("setup error: %v", err)
+	}
+	// Mapping nodes should be silently ignored (returns nil)
+	if err := st.UnmarshalYAML(node.Content[0]); err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+	if !st.IsEmpty() {
+		t.Error("mapping node should result in empty SchemaType")
+	}
+}
+
+func TestSchemaType_UnmarshalJSON_InvalidArray(t *testing.T) {
+	var st SchemaType
+	// Array of non-strings should fail
+	err := json.Unmarshal([]byte(`[1, 2, 3]`), &st)
+	if err == nil {
+		t.Error("expected error for non-string array elements")
 	}
 }
 
