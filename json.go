@@ -1,4 +1,4 @@
-// Package openapi provides a comprehensive Go implementation of the OpenAPI 3.0 specification.
+// Package openapi provides a comprehensive Go implementation of the OpenAPI 3.1 specification.
 package openapi
 
 import "encoding/json"

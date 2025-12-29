@@ -3,6 +3,7 @@ package openapi
 // OpenAPI represents the root document object.
 type OpenAPI struct {
 	Paths        map[string]PathItem    `json:"paths" yaml:"paths"`
+	Webhooks     map[string]*PathItem   `json:"webhooks,omitempty" yaml:"webhooks,omitempty"`
 	Components   *Components            `json:"components,omitempty" yaml:"components,omitempty"`
 	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
 	Info         Info                   `json:"info" yaml:"info"`
@@ -31,8 +32,9 @@ type Contact struct {
 
 // License information for the API.
 type License struct {
-	Name string `json:"name" yaml:"name"`
-	URL  string `json:"url,omitempty" yaml:"url,omitempty"`
+	Name       string `json:"name" yaml:"name"`
+	URL        string `json:"url,omitempty" yaml:"url,omitempty"`
+	Identifier string `json:"identifier,omitempty" yaml:"identifier,omitempty"`
 }
 
 // Server represents a server.
@@ -129,12 +131,12 @@ type Schema struct {
 	AdditionalProperties any                    `json:"additionalProperties,omitempty" yaml:"additionalProperties,omitempty"`
 	Example              any                    `json:"example,omitempty" yaml:"example,omitempty"`
 	Default              any                    `json:"default,omitempty" yaml:"default,omitempty"`
-	ExclusiveMaximum     *bool                  `json:"exclusiveMaximum,omitempty" yaml:"exclusiveMaximum,omitempty"`
+	Const                any                    `json:"const,omitempty" yaml:"const,omitempty"`
+	ExclusiveMaximum     *float64               `json:"exclusiveMaximum,omitempty" yaml:"exclusiveMaximum,omitempty"`
 	Not                  *Schema                `json:"not,omitempty" yaml:"not,omitempty"`
 	Items                *Schema                `json:"items,omitempty" yaml:"items,omitempty"`
 	Deprecated           *bool                  `json:"deprecated,omitempty" yaml:"deprecated,omitempty"`
 	Discriminator        *Discriminator         `json:"discriminator,omitempty" yaml:"discriminator,omitempty"`
-	Nullable             *bool                  `json:"nullable,omitempty" yaml:"nullable,omitempty"`
 	WriteOnly            *bool                  `json:"writeOnly,omitempty" yaml:"writeOnly,omitempty"`
 	ReadOnly             *bool                  `json:"readOnly,omitempty" yaml:"readOnly,omitempty"`
 	ExternalDocs         *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
@@ -143,7 +145,7 @@ type Schema struct {
 	UniqueItems          *bool                  `json:"uniqueItems,omitempty" yaml:"uniqueItems,omitempty"`
 	Minimum              *float64               `json:"minimum,omitempty" yaml:"minimum,omitempty"`
 	Maximum              *float64               `json:"maximum,omitempty" yaml:"maximum,omitempty"`
-	ExclusiveMinimum     *bool                  `json:"exclusiveMinimum,omitempty" yaml:"exclusiveMinimum,omitempty"`
+	ExclusiveMinimum     *float64               `json:"exclusiveMinimum,omitempty" yaml:"exclusiveMinimum,omitempty"`
 	MaxProperties        *int                   `json:"maxProperties,omitempty" yaml:"maxProperties,omitempty"`
 	Properties           map[string]*Schema     `json:"properties,omitempty" yaml:"properties,omitempty"`
 	MinLength            *int                   `json:"minLength,omitempty" yaml:"minLength,omitempty"`
@@ -153,7 +155,7 @@ type Schema struct {
 	MaxItems             *int                   `json:"maxItems,omitempty" yaml:"maxItems,omitempty"`
 	Format               string                 `json:"format,omitempty" yaml:"format,omitempty"`
 	Pattern              string                 `json:"pattern,omitempty" yaml:"pattern,omitempty"`
-	Type                 string                 `json:"type,omitempty" yaml:"type,omitempty"`
+	Type                 *SchemaType            `json:"type,omitempty" yaml:"type,omitempty"`
 	Title                string                 `json:"title,omitempty" yaml:"title,omitempty"`
 	Description          string                 `json:"description,omitempty" yaml:"description,omitempty"`
 	Ref                  string                 `json:"$ref,omitempty" yaml:"$ref,omitempty"`
@@ -175,6 +177,7 @@ type Components struct {
 	SecuritySchemes map[string]*SecurityScheme `json:"securitySchemes,omitempty" yaml:"securitySchemes,omitempty"`
 	Links           map[string]*Link           `json:"links,omitempty" yaml:"links,omitempty"`
 	Callbacks       map[string]*Callback       `json:"callbacks,omitempty" yaml:"callbacks,omitempty"`
+	PathItems       map[string]*PathItem       `json:"pathItems,omitempty" yaml:"pathItems,omitempty"`
 }
 
 // Tag adds metadata to a single tag.

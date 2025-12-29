@@ -9,11 +9,11 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/zoobzio/openapi)](go.mod)
 [![Release](https://img.shields.io/github/v/release/zoobzio/openapi)](https://github.com/zoobzio/openapi/releases)
 
-A comprehensive Go implementation of the OpenAPI 3.0 specification.
+A comprehensive Go implementation of the OpenAPI 3.1 specification.
 
 ## Features
 
-- Complete OpenAPI 3.0 specification support
+- Complete OpenAPI 3.1 specification support
 - Full JSON and YAML serialization/deserialization
 - All core types: Info, Servers, Paths, Operations, Parameters, Request/Response bodies
 - Advanced features: Security schemes, callbacks, links, discriminators, schema composition
@@ -42,7 +42,7 @@ import (
 
 func main() {
     spec := &openapi.OpenAPI{
-        OpenAPI: "3.0.3",
+        OpenAPI: "3.1.0",
         Info: openapi.Info{
             Title:       "My API",
             Version:     "1.0.0",
@@ -114,7 +114,7 @@ if err != nil {
 
 ```go
 spec := &openapi.OpenAPI{
-    OpenAPI: "3.0.3",
+    OpenAPI: "3.1.0",
     Info: openapi.Info{
         Title:   "Secure API",
         Version: "1.0.0",
@@ -238,11 +238,11 @@ responses := map[string]openapi.Response{
 
 - **Core Objects**: OpenAPI, Info, Contact, License, Server, ServerVariable
 - **Paths & Operations**: PathItem, Operation, Parameter, RequestBody, Response
-- **Schemas**: Full JSON Schema support with validation, composition (allOf/oneOf/anyOf), discriminators
+- **Schemas**: JSON Schema 2020-12 support with type arrays, const, validation, composition (allOf/oneOf/anyOf), discriminators
 - **Media Types**: MediaType, Example, Encoding
 - **Security**: SecurityScheme, SecurityRequirement, OAuthFlows
-- **Advanced**: Callbacks, Links, ExternalDocumentation, Headers
-- **Reusable Components**: All object types can be defined in Components for reuse
+- **Advanced**: Callbacks, Links, ExternalDocumentation, Headers, Webhooks
+- **Reusable Components**: All object types (including PathItems) can be defined in Components for reuse
 - **XML Support**: XML metadata for XML APIs
 - **Validation**: Min/max, patterns, enums, formats, required fields, etc.
 

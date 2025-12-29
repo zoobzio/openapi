@@ -6,7 +6,7 @@ import (
 
 func TestOpenAPI_Structure(t *testing.T) {
 	spec := &OpenAPI{
-		OpenAPI: "3.0.3",
+		OpenAPI: "3.1.0",
 		Info: Info{
 			Title:       "Test API",
 			Version:     "1.0.0",
@@ -18,8 +18,8 @@ func TestOpenAPI_Structure(t *testing.T) {
 		},
 	}
 
-	if spec.OpenAPI != "3.0.3" {
-		t.Errorf("expected openapi '3.0.3', got %q", spec.OpenAPI)
+	if spec.OpenAPI != "3.1.0" {
+		t.Errorf("expected openapi '3.1.0', got %q", spec.OpenAPI)
 	}
 	if spec.Info.Title != "Test API" {
 		t.Errorf("expected title 'Test API', got %q", spec.Info.Title)
@@ -108,7 +108,7 @@ func TestOperation(t *testing.T) {
 				Name:     "id",
 				In:       "path",
 				Required: true,
-				Schema:   &Schema{Type: "string"},
+				Schema:   &Schema{Type: NewSchemaType("string")},
 			},
 		},
 		Responses: map[string]Response{
@@ -138,7 +138,7 @@ func TestParameter(t *testing.T) {
 		In:          "path",
 		Description: "User ID",
 		Required:    true,
-		Schema:      &Schema{Type: "string"},
+		Schema:      &Schema{Type: NewSchemaType("string")},
 	}
 
 	if param.Name != "userId" {
@@ -150,8 +150,8 @@ func TestParameter(t *testing.T) {
 	if !param.Required {
 		t.Error("expected required to be true")
 	}
-	if param.Schema.Type != "string" {
-		t.Errorf("expected schema type 'string', got %q", param.Schema.Type)
+	if param.Schema.Type.String() != "string" {
+		t.Errorf("expected schema type 'string', got %q", param.Schema.Type.String())
 	}
 }
 
@@ -182,7 +182,7 @@ func TestResponse(t *testing.T) {
 		Description: "Successful operation",
 		Content: map[string]MediaType{
 			"application/json": {
-				Schema: &Schema{Type: "object"},
+				Schema: &Schema{Type: NewSchemaType("object")},
 			},
 		},
 	}
@@ -200,20 +200,20 @@ func TestSchema_BasicTypes(t *testing.T) {
 		name   string
 		schema Schema
 	}{
-		{"string", Schema{Type: "string"}},
-		{"integer", Schema{Type: "integer"}},
-		{"number", Schema{Type: "number"}},
-		{"boolean", Schema{Type: "boolean"}},
-		{"array", Schema{Type: "array", Items: &Schema{Type: "string"}}},
-		{"object", Schema{Type: "object", Properties: map[string]*Schema{
-			"name": {Type: "string"},
+		{"string", Schema{Type: NewSchemaType("string")}},
+		{"integer", Schema{Type: NewSchemaType("integer")}},
+		{"number", Schema{Type: NewSchemaType("number")}},
+		{"boolean", Schema{Type: NewSchemaType("boolean")}},
+		{"array", Schema{Type: NewSchemaType("array"), Items: &Schema{Type: NewSchemaType("string")}}},
+		{"object", Schema{Type: NewSchemaType("object"), Properties: map[string]*Schema{
+			"name": {Type: NewSchemaType("string")},
 		}}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if tt.schema.Type != tt.name {
-				t.Errorf("expected type %q, got %q", tt.name, tt.schema.Type)
+			if tt.schema.Type.String() != tt.name {
+				t.Errorf("expected type %q, got %q", tt.name, tt.schema.Type.String())
 			}
 		})
 	}
@@ -231,10 +231,10 @@ func TestSchema_WithRef(t *testing.T) {
 
 func TestSchema_WithRequired(t *testing.T) {
 	schema := Schema{
-		Type: "object",
+		Type: NewSchemaType("object"),
 		Properties: map[string]*Schema{
-			"name":  {Type: "string"},
-			"email": {Type: "string"},
+			"name":  {Type: NewSchemaType("string")},
+			"email": {Type: NewSchemaType("string")},
 		},
 		Required: []string{"name", "email"},
 	}
@@ -246,7 +246,7 @@ func TestSchema_WithRequired(t *testing.T) {
 
 func TestSchema_WithFormat(t *testing.T) {
 	schema := Schema{
-		Type:   "string",
+		Type:   NewSchemaType("string"),
 		Format: "date-time",
 	}
 
@@ -259,10 +259,10 @@ func TestComponents(t *testing.T) {
 	components := Components{
 		Schemas: map[string]*Schema{
 			"User": {
-				Type: "object",
+				Type: NewSchemaType("object"),
 				Properties: map[string]*Schema{
-					"id":   {Type: "integer"},
-					"name": {Type: "string"},
+					"id":   {Type: NewSchemaType("integer")},
+					"name": {Type: NewSchemaType("string")},
 				},
 			},
 		},
@@ -297,15 +297,15 @@ func TestTag(t *testing.T) {
 
 func TestMediaType(t *testing.T) {
 	mediaType := MediaType{
-		Schema: &Schema{Type: "object"},
+		Schema: &Schema{Type: NewSchemaType("object")},
 		Example: map[string]any{
 			"name": "John",
 			"age":  30,
 		},
 	}
 
-	if mediaType.Schema.Type != "object" {
-		t.Errorf("expected schema type 'object', got %q", mediaType.Schema.Type)
+	if mediaType.Schema.Type.String() != "object" {
+		t.Errorf("expected schema type 'object', got %q", mediaType.Schema.Type.String())
 	}
 	if mediaType.Example == nil {
 		t.Error("expected example to be set")
@@ -411,9 +411,9 @@ func TestSchema_Composition(t *testing.T) {
 		AllOf: []*Schema{
 			{Ref: "#/components/schemas/Base"},
 			{
-				Type: "object",
+				Type: NewSchemaType("object"),
 				Properties: map[string]*Schema{
-					"extra": {Type: "string"},
+					"extra": {Type: NewSchemaType("string")},
 				},
 			},
 		},
@@ -452,7 +452,7 @@ func TestSchema_OneOf(t *testing.T) {
 
 func TestSchema_Default(t *testing.T) {
 	schema := Schema{
-		Type:    "integer",
+		Type:    NewSchemaType("integer"),
 		Default: 10,
 	}
 
@@ -461,11 +461,22 @@ func TestSchema_Default(t *testing.T) {
 	}
 }
 
+func TestSchema_Const(t *testing.T) {
+	schema := Schema{
+		Type:  NewSchemaType("string"),
+		Const: "fixed_value",
+	}
+
+	if schema.Const != "fixed_value" {
+		t.Errorf("expected const 'fixed_value', got %v", schema.Const)
+	}
+}
+
 func TestHeader(t *testing.T) {
 	header := Header{
 		Description: "Request ID",
 		Required:    true,
-		Schema:      &Schema{Type: "string", Format: "uuid"},
+		Schema:      &Schema{Type: NewSchemaType("string"), Format: "uuid"},
 	}
 
 	if header.Description != "Request ID" {
@@ -522,7 +533,7 @@ func TestCallback(t *testing.T) {
 				RequestBody: &RequestBody{
 					Content: map[string]MediaType{
 						"application/json": {
-							Schema: &Schema{Type: "object"},
+							Schema: &Schema{Type: NewSchemaType("object")},
 						},
 					},
 				},
@@ -608,7 +619,7 @@ func TestEncoding(t *testing.T) {
 		ContentType: "application/json",
 		Headers: map[string]*Header{
 			"X-Custom": {
-				Schema: &Schema{Type: "string"},
+				Schema: &Schema{Type: NewSchemaType("string")},
 			},
 		},
 	}
@@ -633,7 +644,7 @@ func TestComponents_Extended(t *testing.T) {
 			"PageParam": {
 				Name:   "page",
 				In:     "query",
-				Schema: &Schema{Type: "integer"},
+				Schema: &Schema{Type: NewSchemaType("integer")},
 			},
 		},
 		RequestBodies: map[string]*RequestBody{

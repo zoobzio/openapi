@@ -7,7 +7,7 @@ import (
 
 func TestToJSON(t *testing.T) {
 	spec := &OpenAPI{
-		OpenAPI: "3.0.3",
+		OpenAPI: "3.1.0",
 		Info: Info{
 			Title:   "Test API",
 			Version: "1.0.0",
@@ -41,7 +41,7 @@ func TestToJSON(t *testing.T) {
 
 func TestFromJSON(t *testing.T) {
 	jsonData := []byte(`{
-		"openapi": "3.0.3",
+		"openapi": "3.1.0",
 		"info": {
 			"title": "Test API",
 			"version": "1.0.0"
@@ -64,8 +64,8 @@ func TestFromJSON(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FromJSON failed: %v", err)
 	}
-	if spec.OpenAPI != "3.0.3" {
-		t.Errorf("expected openapi '3.0.3', got %q", spec.OpenAPI)
+	if spec.OpenAPI != "3.1.0" {
+		t.Errorf("expected openapi '3.1.0', got %q", spec.OpenAPI)
 	}
 	if spec.Info.Title != "Test API" {
 		t.Errorf("expected title 'Test API', got %q", spec.Info.Title)
@@ -86,7 +86,7 @@ func TestFromJSON_Invalid(t *testing.T) {
 
 func TestJSON_RoundTrip(t *testing.T) {
 	original := &OpenAPI{
-		OpenAPI: "3.0.3",
+		OpenAPI: "3.1.0",
 		Info: Info{
 			Title:       "Test API",
 			Version:     "1.0.0",
@@ -105,7 +105,7 @@ func TestJSON_RoundTrip(t *testing.T) {
 					OperationID: "getUserById",
 					Tags:        []string{"users"},
 					Parameters: []Parameter{
-						{Name: "id", In: "path", Required: true, Schema: &Schema{Type: "string"}},
+						{Name: "id", In: "path", Required: true, Schema: &Schema{Type: NewSchemaType("string")}},
 					},
 					Responses: map[string]Response{
 						"200": {Description: "Success"},
@@ -117,10 +117,10 @@ func TestJSON_RoundTrip(t *testing.T) {
 		Components: &Components{
 			Schemas: map[string]*Schema{
 				"User": {
-					Type: "object",
+					Type: NewSchemaType("object"),
 					Properties: map[string]*Schema{
-						"id":   {Type: "string"},
-						"name": {Type: "string"},
+						"id":   {Type: NewSchemaType("string")},
+						"name": {Type: NewSchemaType("string")},
 					},
 					Required: []string{"id", "name"},
 				},
