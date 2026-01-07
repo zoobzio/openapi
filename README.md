@@ -9,26 +9,49 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/zoobzio/openapi)](go.mod)
 [![Release](https://img.shields.io/github/v/release/zoobzio/openapi)](https://github.com/zoobzio/openapi/releases)
 
-A comprehensive Go implementation of the OpenAPI 3.1 specification.
+OpenAPI 3.1 as native Go types. Build, read, and write API specifications with full type safety.
 
-## Features
+## OpenAPI in Go
 
-- Complete OpenAPI 3.1 specification support
-- Full JSON and YAML serialization/deserialization
-- All core types: Info, Servers, Paths, Operations, Parameters, Request/Response bodies
-- Advanced features: Security schemes, callbacks, links, discriminators, schema composition
-- Reusable components for all object types
-- Extensive validation support (min/max, patterns, enums, etc.)
+The OpenAPI specification becomes Go structs—each type mirrors the spec exactly:
 
-## Installation
+```go
+spec := &openapi.OpenAPI{
+    OpenAPI: "3.1.0",
+    Info: openapi.Info{
+        Title:   "Users API",
+        Version: "1.0.0",
+    },
+    Paths: map[string]openapi.PathItem{
+        "/users/{id}": {
+            Get: &openapi.Operation{
+                OperationID: "getUser",
+                Parameters: []openapi.Parameter{{
+                    Name:     "id",
+                    In:       "path",
+                    Required: true,
+                    Schema:   &openapi.Schema{Type: openapi.NewSchemaType("string")},
+                }},
+                Responses: map[string]openapi.Response{
+                    "200": {Description: "User found"},
+                },
+            },
+        },
+    },
+}
+```
+
+No wrapper functions. No builder patterns. Just the specification as data.
+
+## Install
 
 ```bash
 go get github.com/zoobzio/openapi
 ```
 
-## Usage
+Requires Go 1.24 or higher.
 
-### Creating an OpenAPI Specification
+## Quick Start
 
 ```go
 package main
@@ -36,33 +59,34 @@ package main
 import (
     "encoding/json"
     "fmt"
+    "os"
 
     "github.com/zoobzio/openapi"
+    "gopkg.in/yaml.v3"
 )
 
 func main() {
+    // Build a specification
     spec := &openapi.OpenAPI{
         OpenAPI: "3.1.0",
         Info: openapi.Info{
-            Title:       "My API",
+            Title:       "Pet Store",
             Version:     "1.0.0",
-            Description: "A sample API",
+            Description: "A sample pet store API",
         },
         Paths: map[string]openapi.PathItem{
-            "/users": {
+            "/pets": {
                 Get: &openapi.Operation{
-                    Summary:     "List users",
-                    OperationID: "listUsers",
+                    Summary:     "List all pets",
+                    OperationID: "listPets",
                     Responses: map[string]openapi.Response{
                         "200": {
-                            Description: "Success",
+                            Description: "A list of pets",
                             Content: map[string]openapi.MediaType{
                                 "application/json": {
                                     Schema: &openapi.Schema{
-                                        Type: "array",
-                                        Items: &openapi.Schema{
-                                            Ref: "#/components/schemas/User",
-                                        },
+                                        Type:  openapi.NewSchemaType("array"),
+                                        Items: &openapi.Schema{Ref: "#/components/schemas/Pet"},
                                     },
                                 },
                             },
@@ -73,11 +97,11 @@ func main() {
         },
         Components: &openapi.Components{
             Schemas: map[string]*openapi.Schema{
-                "User": {
-                    Type: "object",
+                "Pet": {
+                    Type: openapi.NewSchemaType("object"),
                     Properties: map[string]*openapi.Schema{
-                        "id":   {Type: "string"},
-                        "name": {Type: "string"},
+                        "id":   {Type: openapi.NewSchemaType("integer")},
+                        "name": {Type: openapi.NewSchemaType("string")},
                     },
                     Required: []string{"id", "name"},
                 },
@@ -86,165 +110,36 @@ func main() {
     }
 
     // Output as JSON
-    data, _ := json.MarshalIndent(spec, "", "  ")
-    fmt.Println(string(data))
+    json.NewEncoder(os.Stdout).Encode(spec)
+
+    // Or YAML
+    yaml.NewEncoder(os.Stdout).Encode(spec)
+
+    // Read existing specs
+    data, _ := os.ReadFile("api.yaml")
+    var existing openapi.OpenAPI
+    yaml.Unmarshal(data, &existing)
+    fmt.Println(existing.Info.Title)
 }
 ```
 
-### Working with YAML
+## Why OpenAPI?
 
-```go
-import "gopkg.in/yaml.v3"
+- **Direct mapping**: Types match the OpenAPI 3.1 specification exactly—no translation layer
+- **Full coverage**: Every spec construct supported, from basic paths to discriminators and callbacks
+- **Dual format**: JSON and YAML serialization work identically via struct tags
+- **Zero magic**: Standard Go marshalling, no reflection tricks or code generation
+- **Minimal footprint**: Single dependency (yaml.v3), pure data structures
 
-// Marshal to YAML
-data, err := yaml.Marshal(spec)
-if err != nil {
-    log.Fatal(err)
-}
+## Documentation
 
-// Unmarshal from YAML
-var spec openapi.OpenAPI
-err = yaml.Unmarshal(data, &spec)
-if err != nil {
-    log.Fatal(err)
-}
-```
+- [Overview](docs/1.overview.md) — Design philosophy and scope
+- [Quick Start](docs/2.quickstart.md) — Common usage patterns
+- [Types](docs/3.types.md) — Type hierarchy and relationships
 
-### Security Schemes
+## Contributing
 
-```go
-spec := &openapi.OpenAPI{
-    OpenAPI: "3.1.0",
-    Info: openapi.Info{
-        Title:   "Secure API",
-        Version: "1.0.0",
-    },
-    Components: &openapi.Components{
-        SecuritySchemes: map[string]*openapi.SecurityScheme{
-            "bearerAuth": {
-                Type:         "http",
-                Scheme:       "bearer",
-                BearerFormat: "JWT",
-            },
-            "apiKey": {
-                Type: "apiKey",
-                Name: "X-API-Key",
-                In:   "header",
-            },
-            "oauth2": {
-                Type: "oauth2",
-                Flows: &openapi.OAuthFlows{
-                    AuthorizationCode: &openapi.OAuthFlow{
-                        AuthorizationURL: "https://example.com/oauth/authorize",
-                        TokenURL:         "https://example.com/oauth/token",
-                        Scopes: map[string]string{
-                            "read:users":  "Read user data",
-                            "write:users": "Write user data",
-                        },
-                    },
-                },
-            },
-        },
-    },
-    Security: []openapi.SecurityRequirement{
-        {"bearerAuth": {}},
-    },
-}
-```
-
-### Schema Composition
-
-```go
-// Using allOf for inheritance
-schema := &openapi.Schema{
-    AllOf: []*openapi.Schema{
-        {Ref: "#/components/schemas/Base"},
-        {
-            Type: "object",
-            Properties: map[string]*openapi.Schema{
-                "extra": {Type: "string"},
-            },
-        },
-    },
-}
-
-// Using oneOf for polymorphism
-schema := &openapi.Schema{
-    OneOf: []*openapi.Schema{
-        {Ref: "#/components/schemas/Cat"},
-        {Ref: "#/components/schemas/Dog"},
-    },
-    Discriminator: &openapi.Discriminator{
-        PropertyName: "petType",
-        Mapping: map[string]string{
-            "cat": "#/components/schemas/Cat",
-            "dog": "#/components/schemas/Dog",
-        },
-    },
-}
-```
-
-### Callbacks (Webhooks)
-
-```go
-operation := &openapi.Operation{
-    Summary: "Subscribe to events",
-    Callbacks: map[string]openapi.Callback{
-        "onEvent": {
-            "{$request.body#/callbackUrl}": openapi.PathItem{
-                Post: &openapi.Operation{
-                    Summary: "Event notification",
-                    RequestBody: &openapi.RequestBody{
-                        Content: map[string]openapi.MediaType{
-                            "application/json": {
-                                Schema: &openapi.Schema{
-                                    Type: "object",
-                                    Properties: map[string]*openapi.Schema{
-                                        "event": {Type: "string"},
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    Responses: map[string]openapi.Response{
-                        "200": {Description: "Acknowledged"},
-                    },
-                },
-            },
-        },
-    },
-}
-```
-
-### Response Links
-
-```go
-responses := map[string]openapi.Response{
-    "200": {
-        Description: "User created",
-        Links: map[string]*openapi.Link{
-            "GetUserByUserId": {
-                OperationID: "getUserById",
-                Parameters: map[string]any{
-                    "userId": "$response.body#/id",
-                },
-            },
-        },
-    },
-}
-```
-
-## Complete Feature List
-
-- **Core Objects**: OpenAPI, Info, Contact, License, Server, ServerVariable
-- **Paths & Operations**: PathItem, Operation, Parameter, RequestBody, Response
-- **Schemas**: JSON Schema 2020-12 support with type arrays, const, validation, composition (allOf/oneOf/anyOf), discriminators
-- **Media Types**: MediaType, Example, Encoding
-- **Security**: SecurityScheme, SecurityRequirement, OAuthFlows
-- **Advanced**: Callbacks, Links, ExternalDocumentation, Headers, Webhooks
-- **Reusable Components**: All object types (including PathItems) can be defined in Components for reuse
-- **XML Support**: XML metadata for XML APIs
-- **Validation**: Min/max, patterns, enums, formats, required fields, etc.
+Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
