@@ -295,6 +295,23 @@ func TestTag(t *testing.T) {
 	}
 }
 
+func TestTagGroup(t *testing.T) {
+	group := TagGroup{
+		Name: "Account",
+		Tags: []string{"Authentication", "Users"},
+	}
+
+	if group.Name != "Account" {
+		t.Errorf("expected name 'Account', got %q", group.Name)
+	}
+	if len(group.Tags) != 2 {
+		t.Errorf("expected 2 tags, got %d", len(group.Tags))
+	}
+	if group.Tags[0] != "Authentication" {
+		t.Errorf("expected first tag 'Authentication', got %q", group.Tags[0])
+	}
+}
+
 func TestMediaType(t *testing.T) {
 	mediaType := MediaType{
 		Schema: &Schema{Type: NewSchemaType("object")},

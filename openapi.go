@@ -11,6 +11,7 @@ type OpenAPI struct {
 	Servers      []Server               `json:"servers,omitempty" yaml:"servers,omitempty"`
 	Security     []SecurityRequirement  `json:"security,omitempty" yaml:"security,omitempty"`
 	Tags         []Tag                  `json:"tags,omitempty" yaml:"tags,omitempty"`
+	TagGroups    []TagGroup             `json:"x-tagGroups,omitempty" yaml:"x-tagGroups,omitempty"`
 }
 
 // Info provides metadata about the API.
@@ -185,6 +186,12 @@ type Tag struct {
 	ExternalDocs *ExternalDocumentation `json:"externalDocs,omitempty" yaml:"externalDocs,omitempty"`
 	Name         string                 `json:"name" yaml:"name"`
 	Description  string                 `json:"description,omitempty" yaml:"description,omitempty"`
+}
+
+// TagGroup groups tags for documentation tools like Redoc.
+type TagGroup struct {
+	Name string   `json:"name" yaml:"name"`
+	Tags []string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 // ExternalDocumentation allows referencing an external resource.

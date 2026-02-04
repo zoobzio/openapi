@@ -77,3 +77,16 @@ jobs:
       with:
         name: benchmark-results
         path: benchmark_results.txt
+
+  ci-complete:
+    name: CI Complete
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [test, lint, benchmark]
+    steps:
+    - name: Check results
+      run: |
+        if [[ "${{ needs.test.result }}" != "success" || "${{ needs.lint.result }}" != "success" || "${{ needs.benchmark.result }}" != "success" ]]; then
+          echo "One or more CI jobs failed"
+          exit 1
+        fi
