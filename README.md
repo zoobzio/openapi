@@ -1,13 +1,13 @@
 # OpenAPI
 
-[![CI Status](https://github.com/zoobzio/openapi/workflows/CI/badge.svg)](https://github.com/zoobzio/openapi/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/zoobzio/openapi/graph/badge.svg?branch=main)](https://codecov.io/gh/zoobzio/openapi)
-[![Go Report Card](https://goreportcard.com/badge/github.com/zoobzio/openapi)](https://goreportcard.com/report/github.com/zoobzio/openapi)
-[![CodeQL](https://github.com/zoobzio/openapi/workflows/CodeQL/badge.svg)](https://github.com/zoobzio/openapi/security/code-scanning)
-[![Go Reference](https://pkg.go.dev/badge/github.com/zoobzio/openapi.svg)](https://pkg.go.dev/github.com/zoobzio/openapi)
-[![License](https://img.shields.io/github/license/zoobzio/openapi)](LICENSE)
-[![Go Version](https://img.shields.io/github/go-mod/go-version/zoobzio/openapi)](go.mod)
-[![Release](https://img.shields.io/github/v/release/zoobzio/openapi)](https://github.com/zoobzio/openapi/releases)
+[![CI Status](https://github.com/zoobz-io/openapi/workflows/CI/badge.svg)](https://github.com/zoobz-io/openapi/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/zoobz-io/openapi/graph/badge.svg?branch=main)](https://codecov.io/gh/zoobz-io/openapi)
+[![Go Report Card](https://goreportcard.com/badge/github.com/zoobz-io/openapi)](https://goreportcard.com/report/github.com/zoobz-io/openapi)
+[![CodeQL](https://github.com/zoobz-io/openapi/workflows/CodeQL/badge.svg)](https://github.com/zoobz-io/openapi/security/code-scanning)
+[![Go Reference](https://pkg.go.dev/badge/github.com/zoobz-io/openapi.svg)](https://pkg.go.dev/github.com/zoobz-io/openapi)
+[![License](https://img.shields.io/github/license/zoobz-io/openapi)](LICENSE)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/zoobz-io/openapi)](go.mod)
+[![Release](https://img.shields.io/github/v/release/zoobz-io/openapi)](https://github.com/zoobz-io/openapi/releases)
 
 OpenAPI 3.1 as native Go types. Build, read, and write API specifications with full type safety.
 
@@ -46,7 +46,7 @@ No wrapper functions. No builder patterns. Just the specification as data.
 ## Install
 
 ```bash
-go get github.com/zoobzio/openapi
+go get github.com/zoobz-io/openapi
 ```
 
 Requires Go 1.24 or higher.
@@ -61,7 +61,7 @@ import (
     "fmt"
     "os"
 
-    "github.com/zoobzio/openapi"
+    "github.com/zoobz-io/openapi"
     "gopkg.in/yaml.v3"
 )
 

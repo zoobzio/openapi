@@ -1,84 +1,52 @@
-.PHONY: test bench lint coverage clean all help check ci install-tools install-hooks
+.PHONY: test test-unit lint lint-fix security coverage clean help check ci install-tools install-hooks
 
-# Default target
-all: test lint
+.DEFAULT_GOAL := help
 
-# Display help
-help:
+help: ## Display available commands
 	@echo "openapi Development Commands"
-	@echo "============================"
-	@echo ""
-	@echo "Testing & Quality:"
-	@echo "  make test         - Run all tests with race detector"
-	@echo "  make bench        - Run benchmarks"
-	@echo "  make lint         - Run linters"
-	@echo "  make lint-fix     - Run linters with auto-fix"
-	@echo "  make coverage     - Generate coverage report (HTML)"
-	@echo "  make check        - Run tests and lint (quick check)"
-	@echo ""
-	@echo "Setup:"
-	@echo "  make install-tools - Install required development tools"
-	@echo "  make install-hooks - Install git pre-commit hook"
-	@echo ""
-	@echo "Other:"
-	@echo "  make clean        - Clean generated files"
-	@echo "  make ci           - Run full CI simulation"
-	@echo "  make all          - Run tests and lint (default)"
+	@echo "=============================="
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 
-# Run tests with race detector
-test:
-	@echo "Running tests..."
-	@go test -v -race ./...
+test: ## Run all tests with race detector
+	@go test -v -race -tags testing ./...
 
-# Run benchmarks
-bench:
-	@echo "Running benchmarks..."
-	@go test -bench=. -benchmem -benchtime=1s .
+test-unit: ## Run unit tests only (short mode)
+	@go test -v -race -tags testing -short ./...
 
-# Run linters
-lint:
-	@echo "Running linters..."
+lint: ## Run linters
 	@golangci-lint run --config=.golangci.yml --timeout=5m
 
-# Run linters with auto-fix
-lint-fix:
-	@echo "Running linters with auto-fix..."
+lint-fix: ## Run linters with auto-fix
 	@golangci-lint run --config=.golangci.yml --fix
 
-# Generate coverage report
-coverage:
-	@echo "Generating coverage report..."
-	@go test -coverprofile=coverage.out ./...
+security: ## Run security scanner
+	@gosec -quiet ./...
+
+coverage: ## Generate coverage report (HTML)
+	@go test -tags testing -coverprofile=coverage.out ./...
 	@go tool cover -html=coverage.out -o coverage.html
 	@go tool cover -func=coverage.out | tail -1
-	@echo "Coverage report generated: coverage.html"
+	@echo "Coverage report: coverage.html"
 
-# Clean generated files
-clean:
-	@echo "Cleaning..."
+clean: ## Remove generated files
 	@rm -f coverage.out coverage.html coverage.txt
 	@find . -name "*.test" -delete
 	@find . -name "*.prof" -delete
 	@find . -name "*.out" -delete
 
-# Install development tools
-install-tools:
-	@echo "Installing development tools..."
+install-tools: ## Install development tools
 	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.7.2
+	@go install github.com/securego/gosec/v2/cmd/gosec@latest
 
-# Install git pre-commit hook
-install-hooks:
-	@echo "Installing git hooks..."
+install-hooks: ## Install git pre-commit hook
 	@mkdir -p .git/hooks
 	@echo '#!/bin/sh' > .git/hooks/pre-commit
 	@echo 'make check' >> .git/hooks/pre-commit
 	@chmod +x .git/hooks/pre-commit
 	@echo "Pre-commit hook installed"
 
-# Quick check - run tests and lint
-check: test lint
+check: lint test security ## Run lint, tests, and security scan
 	@echo "All checks passed!"
 
-# CI simulation - what CI runs
-ci: clean lint test coverage bench
+ci: clean check coverage ## Full CI simulation
 	@echo "CI simulation complete!"

@@ -78,7 +78,7 @@ changelog:
 # Release configuration
 release:
   github:
-    owner: zoobzio
+    owner: zoobz-io
     name: openapi
 
   name_template: "{{ .ProjectName }} v{{ .Version }}"
@@ -94,7 +94,7 @@ release:
     ### Installation
 
     ```bash
-    go get github.com/zoobzio/openapi@v{{ .Version }}
+    go get github.com/zoobz-io/openapi@v{{ .Version }}
     ```
 
     ### Requirements
@@ -103,7 +103,7 @@ release:
   footer: |
     ---
 
-    **Full Documentation:** https://github.com/zoobzio/openapi/blob/v{{ .Version }}/README.md
+    **Full Documentation:** https://github.com/zoobz-io/openapi/blob/v{{ .Version }}/README.md
 
     Thanks to all contributors!
 
