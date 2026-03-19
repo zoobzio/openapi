@@ -1,7 +1,7 @@
 repository:
   name: openapi
-  description: OpenAPI 3.1 as native Go types
-  homepage: https://github.com/zoobzio/openapi
+  description: OpenAPI 3.1 specification as native Go types
+  homepage: https://openapi.zoobz.io
   has_wiki: true
   has_downloads: true
   default_branch: main
@@ -9,6 +9,15 @@ repository:
   allow_merge_commit: false
   allow_rebase_merge: false
   delete_branch_on_merge: true
+  topics:
+    - go
+    - golang
+    - zoobzio
+    - openapi
+    - api
+    - specification
+    - json-schema
+    - rest
 
 branches:
   - name: main

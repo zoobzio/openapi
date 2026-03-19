@@ -1,4 +1,4 @@
-module github.com/zoobzio/openapi
+module github.com/zoobz-io/openapi
 
 go 1.24
 
